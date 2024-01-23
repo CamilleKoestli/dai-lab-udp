@@ -1,0 +1,11 @@
+{
+  "multicast-group": "239.255.22.5",
+  "multicast-port": 9904,
+  "instruments": {
+    "piano": "ti-ta-ti",
+    "trumpet": "pouet",
+    "flute": "trulu",
+    "violin": "gzi-gzi",
+    "drum": "boum-boum"
+  }
+}
