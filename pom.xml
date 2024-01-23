@@ -23,7 +23,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ch.heigvd.Main</mainClass>
+                            <mainClass>docker.image-validation.app</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
