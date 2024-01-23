@@ -39,10 +39,9 @@ public class Auditor {
                 while (true) {
                     try (Socket clientSocket = serverSocket.accept();
                          PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-
-                        Map<String, Musician> activeList = Musician.getActiveMusicians();
+                        Musician.dropMusicians();
                         ObjectMapper mapper = new ObjectMapper();
-                        String json = mapper.writeValueAsString(activeList);
+                        String json = mapper.writeValueAsString(Musician.getActiveMusicians());
 
                         out.println(json);
                     } catch (IOException e) {
