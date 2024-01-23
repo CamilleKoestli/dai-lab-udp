@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.net.*;
-import java.util.Map;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Auditor {
