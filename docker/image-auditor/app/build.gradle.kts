@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    java //for uberJar
 }
 
 repositories {
@@ -23,6 +24,35 @@ dependencies {
 
     // This dependency is used by the application.
     implementation(libs.guava)
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0")
+
+    implementation("commons-io:commons-io:2.6") //for uberJar
+}
+
+// From the Gradle docs
+// https://docs.gradle.org/current/userguide/working_with_files.html#sec:creating_uber_jar_example
+tasks.register<Jar>("uberJar") {
+    archiveClassifier = "uber"
+
+    //Added to fix error 'Entry META-INF/LICENSE is a duplicate but no duplicate handling strategy has been set'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+    //Added to fix error of main class not found when running with java -jar
+    manifest {
+        attributes["Main-Class"] = "dai.App"
+    }
+}
+
+application {
+    // Define the main class for the application.
+    mainClass.set("dai.App")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -30,11 +60,6 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
-}
-
-application {
-    // Define the main class for the application.
-    mainClass.set("dai.App")
 }
 
 tasks.named<Test>("test") {
