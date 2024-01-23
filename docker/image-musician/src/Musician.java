@@ -15,34 +15,83 @@ import java.net.InetSocketAddress;
 import static java.nio.charset.StandardCharsets.*;
 
 class Musician {
-    final static String IPADDRESS = "239.255.22.5";
-    final static int PORT = 9904;
 
-    public static void main(String[] args) {
+    private static final String CONFIG_FILE_PATH;
+    private static final String MULTICAST_GROUP;
+    private static final int PORT;
+    private static final Gson GSON = new Gson();
+
+    int lastTimePlayed;
+
+    public Musician(String configFilePath) {
+        CONFIG_FILE_PATH = configFilePath;
+        GSON = new Gson();
+        lastTimePlayed = 0;
+
+        // Getting config file
+        try {
+            config = GSON.fromJson(new FileReader(CONFIG_FILE_PATH), JsonObject.class);
+        } catch (IOException e) {
+            System.err.println("Error reading configuration file: " + e.getMessage());
+        }
+
+        // Getting multicast group
+        MULTICAST_GROUP = config.get("multicast-group").getAsString();
+        System.out.println("Multicast group: " + MULTICAST_GROUP);
+
+        // Getting port
+        PORT = config.get("multicast-port").getAsInt();
+        System.out.println("Port: " + PORT);
+    }
+
+
+    public void run(String arg) {
         System.out.println("Starting musician...");
 
-        // Instrument assignement
-        String instrument = args[0];
-        //TODO améliorer gestion d'exception
-        if(instrument == null){
+        if(arg == null){
             System.out.println("No instrument provided");
             System.exit(1);
         }
-        String sound =
 
+        // Instrument assignement
+        String instrument = arg;
+        System.out.println("Instrument provided: " + instrument);
 
+        // Getting sound corresponding to assigned instrument
+        try{
+            String sound = config.get("instruments").getAsJsonObject().get(instrument).getAsString();
+            System.out.println("Sound: " + sound);
+        } catch (NUllPointerException e | IOException e | JsonParseException e) {
+            System.err.println("Error reading or parsing configuration file: " + e.getMessage());
+            if(sound == null | sound.isEmpty()){
+                System.out.println("No sound found for instrument " + instrument);
+                System.exit(1);
+            } else{
+                System.out.println("Received sound: " + sound);
+            }
+        }
 
-
+        // Sending UDP datagram
         try (DatagramSocket socket = new DatagramSocket()) {
 
-            String message = "Hello group members!";
-            byte[] payload = message.getBytes(UTF_8);
-            InetSocketAddress dest_address = new InetSocketAddress(IPADDRESS, PORT);
-            var packet = new DatagramPacket(payload, payload.length, dest_address);
+            // Generating payload
+            JsonObject payload = new JsonObject();
+            payload.addProperty("uuid", UUID.randomUUID().toString());
+            payload.addProperty("sound", sound);
+            payload.addProperty("played for the last time at", lastTimePlayed);
 
-            System.out.println("Sending UDP datagram: payload=" + message + ", dest=" + dest_address, + ", port=" + PORT);
+            byte[] payloadBytes = GSON.toJson(payload).getBytes(UTF_8);
+
+            // Generating datagram
+            InetSocketAddress dest_address = new InetSocketAddress(MULTICAST_GROUP, PORT);
+            var packet = new DatagramPacket(payloadBytes, payload.length, dest_address);
+
+            // Sending UDP datagram
+            System.out.println("Sending UDP datagram: payload=" + message + ", dest=" + MULTICAST_GROUP, + ", port=" + PORT);
             socket.send(packet);
             System.out.println("UDP datagram sent successfully.");
+
+            lastTimePlayed = System.currentTimeMillis();
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
