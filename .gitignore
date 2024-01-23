@@ -11,3 +11,5 @@ jspm_packages/
 
 .xml
 .idea/*
+
+bin
