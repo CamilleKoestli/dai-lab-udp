@@ -14,17 +14,34 @@ public class Auditor {
 
     //UDP server
     static class UDPServer implements Runnable {
+
+        class Sound {
+            String uuid;
+            String sound;
+        }
         public void run() {
             try (MulticastSocket socket = new MulticastSocket(PORT_UDP)) {
                 var group_address = new InetSocketAddress(IPADDRESS, PORT_UDP);
                 NetworkInterface netif = NetworkInterface.getByName("eth0");
+
                 socket.joinGroup(group_address, netif);
                 byte[] buffer = new byte[1024];
                 var packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
                 String message = new String(packet.getData(), 0, packet.getLength(), UTF_8);
                 System.out.println("Received message: " + message + " from " + packet.getAddress() + ", port " + packet.getPort());
+
+                ObjectMapper mapper = new ObjectMapper();
+                Sound sound = mapper.readValue(message, Sound.class);
+
+                if (Musician.getActiveMusicians().containsKey(sound.uuid)) {
+                    Musician.getActiveMusicians().get(sound.uuid).setLastActivity(System.currentTimeMillis());
+                } else {
+                    Musician musician = new Musician(sound.uuid, sound.sound, System.currentTimeMillis());
+                    Musician.getActiveMusicians().put(sound.uuid, musician);
+                }
                 socket.leaveGroup(group_address, netif);
+
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
