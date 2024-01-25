@@ -30,7 +30,7 @@ public class Auditor {
                 byte[] buffer = new byte[1024];
                 var packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
-                String message = new String(packet.getData(), 0, packet.getLength(), UTF_8);
+                String message = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
                 System.out.println("Received message: " + message + " from " + packet.getAddress() + ", port " + packet.getPort());
 
                 ObjectMapper mapper = new ObjectMapper();
