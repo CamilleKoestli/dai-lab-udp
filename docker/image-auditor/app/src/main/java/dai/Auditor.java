@@ -1,10 +1,12 @@
 package dai;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.net.*;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.nio.charset.StandardCharsets;
+
 
 public class Auditor {
     final static int PORT_TCP = 2205;
@@ -51,21 +53,27 @@ public class Auditor {
     // TCP server
     static class TCPServer implements Runnable {
         public void run() {
+            ObjectMapper mapper = new ObjectMapper();
             try (ServerSocket serverSocket = new ServerSocket(PORT_TCP)) {
                 while (true) {
-                    try (Socket clientSocket = serverSocket.accept();
-                         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-                        Musician.dropMusicians();
-                        ObjectMapper mapper = new ObjectMapper();
-                        String json = mapper.writeValueAsString(Musician.getActiveMusicians());
+                    try (Socket socket = serverSocket.accept();
+                         var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                         var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
 
-                        out.println(json);
+                        // Mise à jour de la liste des musiciens et formatage du message
+                        String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
+                        System.out.println("Sending report: " + report);
+                        out.write(report + "\n");
+                        out.flush();
+
+                    } catch (JsonProcessingException e) {
+                        System.out.println("JSON processing error: " + e);
                     } catch (IOException e) {
-                        System.err.println("Error client connection: " + e.getMessage());
+                        System.out.println("Error on accept or buffers: " + e);
                     }
                 }
             } catch (IOException e) {
-                System.err.println("Problem listen " + PORT_TCP + ": " + e.getMessage());
+                System.out.println("Error with serverSocket: " + e);
             }
         }
     }
