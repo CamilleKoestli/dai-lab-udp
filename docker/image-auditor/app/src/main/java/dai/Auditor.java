@@ -61,7 +61,11 @@ public class Auditor {
                          var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
 
                         // Mise à jour de la liste des musiciens et formatage du message
-                        String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
+                        //String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
+                        StringBuilder report = new StringBuilder();
+                        for(Musician musician : Musician.getActiveMusicians().values()) {
+                            report.append(musician.toString()).append("\n");
+                        }
                         System.out.println("Sending report: " + report);
                         out.write(report + "\n");
                         out.flush();
