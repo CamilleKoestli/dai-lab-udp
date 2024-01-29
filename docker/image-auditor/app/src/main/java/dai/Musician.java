@@ -49,4 +49,8 @@ public class Musician {
     public void setLastActivity(long lastActivity) {
         this.lastActivity = lastActivity;
     }
+
+    public String toString(){
+        return "Musician: " + uuid + " " + instrument + " " + lastActivity;
+    }
 }
