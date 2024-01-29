@@ -15,13 +15,13 @@ public class Auditor {
 
 
     //UDP server
-    static class UDPServer implements Runnable {
-
+    //static class UDPServer implements Runnable {
+    public void UDPServer(){
         class Sound {
             String uuid;
             String sound;
         }
-        public void run() {
+        new Thread(() -> {
             System.out.println("UDP server running");
             try (MulticastSocket socket = new MulticastSocket(PORT_UDP)) {
                 System.out.println("UDP server listening on port " + PORT_UDP);
@@ -48,19 +48,22 @@ public class Auditor {
                     Musician musician = new Musician(sound.uuid, sound.sound, System.currentTimeMillis());
                     Musician.getActiveMusicians().put(sound.uuid, musician);
                 }
-                System.out.println("Active musicians: " + Musician.getActiveMusicians().size());
+                System.out.println("Active musicians:");
+                for(Musician musician : Musician.getActiveMusicians().values()) {
+                    System.out.println(musician.toString());
+                }
                 socket.leaveGroup(group_address, netif);
                 System.out.println("Left multicast group " + IPADDRESS + ", port " + PORT_UDP);
 
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
-        }
+        }).start();
     }
 
     // TCP server
-    static class TCPServer implements Runnable {
-        public void run() {
+    public void TCPServer() {
+        new Thread(() -> {
             System.out.println("TCP server running");
             ObjectMapper mapper = new ObjectMapper();
             try (ServerSocket serverSocket = new ServerSocket(PORT_TCP)) {
@@ -70,13 +73,13 @@ public class Auditor {
                     Socket socket = serverSocket.accept();
                     System.out.println("Client connected: " + socket.getInetAddress() + ", port " + socket.getPort());
                     try (
-                         var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                          var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
                         System.out.println("Sending report");
                         // Mise à jour de la liste des musiciens et formatage du message
                         //String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
                         StringBuilder report = new StringBuilder();
                         for(Musician musician : Musician.getActiveMusicians().values()) {
+                            System.out.println("Musician: " + musician.toString());
                             report.append(musician.toString()).append("\n");
                         }
                         System.out.println("Sending report: " + report);
@@ -92,6 +95,6 @@ public class Auditor {
             } catch (IOException e) {
                 System.out.println("Error with serverSocket: " + e);
             }
-        }
+        }).start();
     }
 }
