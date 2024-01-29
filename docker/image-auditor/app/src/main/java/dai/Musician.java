@@ -12,6 +12,15 @@ public class Musician {
     private String instrument;
     private long lastActivity;
     private static Map<String, Musician> musicians = new ConcurrentHashMap<>() ;
+    static Map<String, String> instruments = new ConcurrentHashMap<>() ;
+
+    static {
+        instruments.put("ti-ta-ti", "piano");
+        instruments.put("pouet", "trumpet");
+        instruments.put("trulu", "flute");
+        instruments.put("gzi-gzi", "violin");
+        instruments.put("boum-boum", "drum");
+    }
 
     public Musician(){}
 

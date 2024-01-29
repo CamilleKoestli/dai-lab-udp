@@ -21,6 +21,7 @@ public class Auditor {
             String uuid;
             String sound;
         }
+
         new Thread(() -> {
             System.out.println("UDP server running");
             try (MulticastSocket socket = new MulticastSocket(PORT_UDP)) {
@@ -45,8 +46,8 @@ public class Auditor {
                     Musician.getActiveMusicians().get(sound.uuid).setLastActivity(System.currentTimeMillis());
                 } else {
                     System.out.println("Adding musician " + sound.uuid);
-                    Musician musician = new Musician(sound.uuid, sound.sound, System.currentTimeMillis());
-                    Musician.getActiveMusicians().put(sound.uuid, musician);
+                    Musician.getActiveMusicians().put(sound.uuid, new Musician(sound.uuid,
+                            Musician.instruments.get(sound.sound), System.currentTimeMillis()));
                 }
                 System.out.println("Active musicians:");
                 for(Musician musician : Musician.getActiveMusicians().values()) {
@@ -75,13 +76,10 @@ public class Auditor {
                     try (
                          var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
                         System.out.println("Sending report");
+
                         // Mise à jour de la liste des musiciens et formatage du message
-                        //String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
-                        StringBuilder report = new StringBuilder();
-                        for(Musician musician : Musician.getActiveMusicians().values()) {
-                            System.out.println("Musician: " + musician.toString());
-                            report.append(musician.toString()).append("\n");
-                        }
+                        String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
+
                         System.out.println("Sending report: " + report);
                         out.write(report + "\n");
                         out.flush();
