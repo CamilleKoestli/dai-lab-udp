@@ -21,7 +21,7 @@ public class App {
         String instrument = args[0];
         System.out.println("Instrument provided: " + instrument);   //TODO test
 
-        Musician musician = new Musician(instrument, "src/main/java/dai/instruments.json");
+        Musician musician = new Musician(instrument);
 
         System.out.println("Musician created: " + musician.getInstrument() + " " + musician.getSound());
 
@@ -29,8 +29,7 @@ public class App {
 
         System.out.println("Starting sender...");
 
-        int i = 7;
-        while(i-- > 0){
+        while(true){
             sender.run("");
             Thread.sleep(1000);
         }

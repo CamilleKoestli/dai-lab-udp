@@ -2,7 +2,10 @@
 package dai;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import  java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,6 +22,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Musician {
 
+    static final Map<String, String> soundsByInstrument = new ConcurrentHashMap<>();
+    static {
+        soundsByInstrument.put("piano", "ti-ta-ti");
+        soundsByInstrument.put("trumpet", "pouet");
+        soundsByInstrument.put("flute", "trulu");
+        soundsByInstrument.put("violin", "gzi-gzi");
+        soundsByInstrument.put("drum", "boum-boum");
+    }
     private final String uuid;
     private final String instrument;
     private final String sound;
@@ -27,10 +38,10 @@ public class Musician {
 
     File instrumentsJson;
 
-    public Musician(String instrument, String instrumentsJson) throws IOException {
+    public Musician(String instrument) throws IOException {
         this.uuid = UUID.randomUUID().toString();
         this.instrument = instrument;
-        this.instrumentsJson = new File(instrumentsJson);
+        //this.instrumentsJson = new File(instrumentsJson);
         this.sound = setSoundFromInstrument(instrument);
         this.lastTimePlayed = 0;
 
@@ -49,10 +60,11 @@ public class Musician {
         return sound;
     }
     public String setSoundFromInstrument(String instrument) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        /*ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(instrumentsJson);
 
-        return jsonNode.get(instrument).asText();
+        return jsonNode.get(instrument).asText();*/
+        return soundsByInstrument.get(instrument);
     }
 
     public long getLastTimePlayed() {
