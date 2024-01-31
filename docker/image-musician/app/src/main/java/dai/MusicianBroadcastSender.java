@@ -1,6 +1,12 @@
+/**
+ * MusicianBroadcastSender class.
+ *
+ * @author Camille Koestli <camille.koestli@heig-vd.ch>
+ * @author Vitória Oliveira <maria.cosmodeoliveira@heig-vd.ch>
+ */
 
 package dai;
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,10 +31,12 @@ public class MusicianBroadcastSender extends BroadcastSender {
             throw new RuntimeException("Error formatting JSON", e);
         }
     }
+
     public void run(String message) {
         super.run(formatToJson(musician.getUuid(), musician.getSound()));
         System.out.println("Sending UDP datagram: uuid: " + musician.getUuid() + ", sound: " + musician.getSound());
+
+        // Update last time played
         musician.setLastTimePlayed(System.currentTimeMillis());
-        System.out.println("Last time played: " + musician.getLastTimePlayed());
     }
 }
