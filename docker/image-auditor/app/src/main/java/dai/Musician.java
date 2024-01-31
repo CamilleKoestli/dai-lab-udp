@@ -1,11 +1,14 @@
+/**
+ * Musician class that represents a musician. It contains the uuid, the instrument and the last activity of the musician.
+ *
+ * @author Camille Koestli <camille.koestli@heig-vd.ch>
+ * @author Vitória Oliveira <maria.cosmodeoliveira@heig-vd.ch>
+ */
+
 package dai;
 
-
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class Musician {
     private String uuid;
@@ -31,10 +34,12 @@ public class Musician {
         musicians.put(uuid, this);
     }
 
+    // Get the list of active musicians
     public static Map<String,Musician> getActiveMusicians(){
         return musicians;
     }
 
+    // Drop musicians that have not played for 5 seconds
     public static void dropMusicians(){
         long currentTime = System.currentTimeMillis();
         for (Map.Entry<String, Musician> entry : musicians.entrySet()) {
@@ -60,6 +65,6 @@ public class Musician {
     }
 
     public String toString(){
-        return "Musician: " + uuid + " " + instrument + " " + lastActivity;
+        return "Musician : uuid : " + uuid + " Instruments : " + instrument + " Last Activity " + lastActivity;
     }
 }
