@@ -27,9 +27,9 @@ public class Musician {
 
     public Musician(){}
 
-    public Musician(String uuid, String instrument, long lastActivity) {
+    public Musician(String uuid, String sound, long lastActivity) {
         this.uuid = uuid;
-        this.instrument = instrument;
+        this.instrument = getInstrumentFromSound(sound);
         this.lastActivity = lastActivity;
         musicians.put(uuid, this);
     }
@@ -54,6 +54,9 @@ public class Musician {
 
     public String getInstrument() {
         return instrument;
+    }
+    public String getInstrumentFromSound(String sound){
+        return instruments.get(sound);
     }
 
     public long getLastActivity() {
