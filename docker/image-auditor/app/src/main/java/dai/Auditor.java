@@ -77,7 +77,7 @@ public class Auditor {
                     try (var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
 
                         // Mise à jour de la liste des musiciens et formatage du message
-                        String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
+                        String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians().elements());
 
                         System.out.println("Sending report: " + report);
                         out.write(report + "\n");

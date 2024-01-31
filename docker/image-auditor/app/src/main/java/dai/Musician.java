@@ -14,7 +14,7 @@ public class Musician {
     private String uuid;
     private String instrument;
     private long lastActivity;
-    private static Map<String, Musician> musicians = new ConcurrentHashMap<>() ;
+    private static ConcurrentHashMap<String, Musician> musicians = new ConcurrentHashMap<>() ;
     static Map<String, String> instruments = new ConcurrentHashMap<>() ;
 
     static {
@@ -35,7 +35,7 @@ public class Musician {
     }
 
     // Get the list of active musicians
-    public static Map<String,Musician> getActiveMusicians(){
+    public static ConcurrentHashMap<String,Musician> getActiveMusicians(){
         return musicians;
     }
 
@@ -65,6 +65,6 @@ public class Musician {
     }
 
     public String toString(){
-        return "Musician : uuid : " + uuid + " Instruments : " + instrument + " Last Activity : " + lastActivity;
+        return "Musician : uuid : " + uuid + " Instrument : " + instrument + " Last Activity : " + lastActivity;
     }
 }
