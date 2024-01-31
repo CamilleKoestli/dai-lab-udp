@@ -65,6 +65,6 @@ public class Musician {
     }
 
     public String toString(){
-        return "Musician : uuid : " + uuid + " Instruments : " + instrument + " Last Activity " + lastActivity;
+        return "Musician : uuid : " + uuid + " Instruments : " + instrument + " Last Activity : " + lastActivity;
     }
 }
