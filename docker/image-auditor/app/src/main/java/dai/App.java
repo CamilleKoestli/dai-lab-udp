@@ -1,3 +1,10 @@
+/**
+ * App class that starts the UDP and TCP servers.
+ *
+ * @author Camille Koestli <camille.koestli@heig-vd.ch>
+ * @author Vitória Oliveira <maria.cosmodeoliveira@heig-vd.ch>
+ */
+
 package dai;
 
 public class App {
@@ -8,6 +15,5 @@ public class App {
 
         udp.start();
         tcp.start();
-
     }
 }

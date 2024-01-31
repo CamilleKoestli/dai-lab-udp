@@ -1,3 +1,10 @@
+/**
+ * Auditor class that starts the UDP and TCP servers.
+ *
+ * @author Camille Koestli <camille.koestli@heig-vd.ch>
+ * @author Vitória Oliveira <maria.cosmodeoliveira@heig-vd.ch>
+ */
+
 package dai;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,9 +39,7 @@ public class Auditor {
                     byte[] buffer = new byte[1024];
                     var packet = new DatagramPacket(buffer, buffer.length);
                     socket.receive(packet);
-                    System.out.println("Received UDP packet from " + packet.getAddress() + ", port " + packet.getPort());
                     String message = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
-                    System.out.println("Received message: " + message + " from " + packet.getAddress() + ", port " + packet.getPort());
 
                     ObjectMapper mapper = new ObjectMapper();
                     Sound sound = mapper.readValue(message, Sound.class);
@@ -42,10 +47,8 @@ public class Auditor {
                     Musician.dropMusicians();
 
                     if (Musician.getActiveMusicians().containsKey(sound.uuid)) {
-                        System.out.println("Updating musician " + sound.uuid);
                         Musician.getActiveMusicians().get(sound.uuid).setLastActivity(System.currentTimeMillis());
                     } else {
-                        System.out.println("Adding musician " + sound.uuid);
                         Musician musician = new Musician(sound.uuid, sound.sound, System.currentTimeMillis());
                         Musician.getActiveMusicians().put(sound.uuid, musician);
                     }
@@ -71,9 +74,7 @@ public class Auditor {
                 while (true) {
                     System.out.println("Waiting for client connection");
                     Socket socket = serverSocket.accept();
-                    System.out.println("Client connected: " + socket.getInetAddress() + ", port " + socket.getPort());
                     try (var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
-                        System.out.println("Sending report");
 
                         // Mise à jour de la liste des musiciens et formatage du message
                         String report = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Musician.getActiveMusicians());
