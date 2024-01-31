@@ -3,9 +3,11 @@ package dai;
 public class App {
 
     public static void main(String[] args) {
+        Thread udp = new Thread(new Auditor.UDPServer());
+        Thread tcp = new Thread(new Auditor.TCPServer());
 
-        Auditor auditor = new Auditor();
-        auditor.UDPServer();
-        auditor.TCPServer();
+        udp.start();
+        tcp.start();
+
     }
 }
