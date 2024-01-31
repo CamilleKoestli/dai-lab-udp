@@ -39,6 +39,8 @@ public class Auditor {
                     ObjectMapper mapper = new ObjectMapper();
                     Sound sound = mapper.readValue(message, Sound.class);
 
+                    Musician.dropMusicians();
+
                     if (Musician.getActiveMusicians().containsKey(sound.uuid)) {
                         System.out.println("Updating musician " + sound.uuid);
                         Musician.getActiveMusicians().get(sound.uuid).setLastActivity(System.currentTimeMillis());
@@ -47,6 +49,7 @@ public class Auditor {
                         Musician musician = new Musician(sound.uuid, sound.sound, System.currentTimeMillis());
                         Musician.getActiveMusicians().put(sound.uuid, musician);
                     }
+
                     System.out.println("Active musicians:");
                     for (Musician musician : Musician.getActiveMusicians().values()) {
                         System.out.println(musician.toString());
